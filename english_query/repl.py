@@ -1,10 +1,12 @@
-from parser import Parser
+from lexer import Lexer
 
 def main():
+    lexer = Lexer("")
     while True:
         user_input = input("> ")
         if user_input.lower() != "quit" or user_input.lower() != "exit":
-            print(Parser(user_input).parse())
+            lexer.text = user_input
+            print(lexer.lex())
         else:
             break
 

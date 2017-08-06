@@ -47,7 +47,7 @@ class ObjectBuiltin():
         self.parent = parent
         self.location_type = type(location)
 
-class Parser():
+class Lexer():
     def __init__(self, text):
         self.text = text
         self.vars = {}
@@ -79,27 +79,24 @@ class Parser():
             name = tokens[1].lower()
             objName = tokens[4].lower()
             objType = self.getType(objName)
-            types = Types.__members__.keys()
 
             objType = self.getClass(objName, objType)
             self.vars[name] = objType
             return (Tokens.DEFINE, Tokens.NAME, name, Tokens.TYPE, objType)
 
         elif self.vars.get(token.lower()):
-            assignment = tokens[1] + " " + token[2]
+            assignment = tokens[1] + " " + tokens[2]
             if assignment == "has a":
                 varName = tokens[3]
 
-                if tokens[4] == "of":
-                    objType = self.vars.get(token.lower())
-                    if objType:
-                        return (Tokens.CLASS, token.lower(),
-                                Tokens.VAR, varName,
-                                Tokens.ASSIGNMENT, tokens[5])
-                    else:
-                        return (Tokens.CLASS, token.lower(),
-                                Tokens.VAR, varName,
-                                Tokens.VAR_CREATION)
+                if len(tokens) == 6:
+                    return (Tokens.CLASS, token.lower(),
+                            Tokens.VAR, varName,
+                            Tokens.ASSIGNMENT, tokens[5])
+                else:
+                    return (Tokens.CLASS, token.lower(),
+                            Tokens.VAR, varName,
+                            Tokens.VAR_CREATION)
 
-    def parse(self):
+    def lex(self):
         return self.step(self.text.split(" "))
