@@ -22,11 +22,13 @@ class Tokens(Enum):
     TYPE = 2,
     NAME = 3,
     FIELD = 4,
-    QUERY = 5,
+    WHAT_QUERY = 5,
     CLASS = 6,
     VAR = 7,
     VAR_CREATION = 8,
-    CLASS_CREATION = 9
+    CLASS_CREATION = 9,
+    WHERE_QUERY = 10,
+    HOW_QUERY = 11
 
 class FoodBuiltin():
     def __init__(self):
@@ -75,28 +77,43 @@ class Lexer():
     def step(self, tokens):
         token = tokens[0]
 
-        if token == "Define":
-            name = tokens[1].lower()
-            objName = tokens[4].lower()
+        if token == "define":
+            name = tokens[1]
+            objName = tokens[4]
             objType = self.getType(objName)
 
             objType = self.getClass(objName, objType)
             self.vars[name] = objType
             return (Tokens.DEFINE, Tokens.NAME, name, Tokens.TYPE, objType)
 
-        elif self.vars.get(token.lower()):
+        elif self.vars.get(token):
             assignment = tokens[1] + " " + tokens[2]
             if assignment == "has a":
                 varName = tokens[3]
 
                 if len(tokens) == 6:
-                    return (Tokens.CLASS, token.lower(),
+                    return (Tokens.CLASS, token,
                             Tokens.VAR, varName,
                             Tokens.ASSIGNMENT, tokens[5])
                 else:
-                    return (Tokens.CLASS, token.lower(),
+                    return (Tokens.CLASS, token,
                             Tokens.VAR, varName,
                             Tokens.VAR_CREATION)
+
+        elif token in self.query_strings:
+            className = tokens[2].rstrip("'s")
+
+            if self.vars.get(className):
+                if token == "where":
+                    return (Tokens.WHERE_QUERY,
+                            Tokens.CLASS, className)
+                else:
+                    varName = tokens[3]
+                    return (Tokens.WHAT_QUERY,
+                            Tokens.CLASS, className,
+                            Tokens.VAR, varName)
+            else:
+                print("[LEXER] Unknown class: " + className)
 
     def lex(self):
         return self.step(self.text.split(" "))

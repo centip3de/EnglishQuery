@@ -3,8 +3,8 @@ from lexer import Lexer
 def main():
     lexer = Lexer("")
     while True:
-        user_input = input("> ")
-        if user_input.lower() != "quit" or user_input.lower() != "exit":
+        user_input = input("> ").lower().strip()
+        if user_input != "quit" and user_input != "exit":
             lexer.text = user_input
             print(lexer.lex())
         else:
