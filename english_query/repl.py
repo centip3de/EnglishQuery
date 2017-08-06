@@ -9,9 +9,8 @@ def main():
         if user_input != "quit" and user_input != "exit":
             lexer.text = user_input
             tokens = lexer.lex()
-            print("[LEXER] " + str(tokens))
             parser.tokens = tokens
-            print("[PARSER] " + str(parser.step()))
+            print(str(parser.step()))
         else:
             break
 

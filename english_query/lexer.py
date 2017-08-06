@@ -18,12 +18,12 @@ class Tokens(Enum):
 
 class Lexer():
     def __init__(self, text):
-        self.text = text
+        self.text = text.rstrip('?')
         self.vars = {}
         self.query_strings = ["where", "what", "who", "when", "how"]
 
     def createClass(self, name):
-        return None
+        return type(name, (DefaultBuiltin,), {})
 
     def getClass(self, name, objType):
         if objType == Types.OBJECT:

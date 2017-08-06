@@ -1,4 +1,6 @@
 from enum import Enum
+
+
 class Color(Enum):
     NONE = "none",
     RED = "red",
@@ -33,3 +35,7 @@ class ObjectBuiltin():
         self.size = size
         self.parent = parent
         self.location_type = type(location)
+
+class DefaultBuiltin():
+    def __init__(self):
+        pass
