@@ -18,7 +18,7 @@ class Tokens(Enum):
 
 class Lexer():
     def __init__(self, text):
-        self.text = text.rstrip('?')
+        self.text = text
         self.vars = {}
         self.query_strings = ["where", "what", "who", "when", "how"]
 
@@ -69,18 +69,23 @@ class Lexer():
 
         elif token in self.query_strings:
             className = tokens[2].rstrip("'s")
+            className = tokens[2].rstrip("'s?")
 
             if self.vars.get(className):
                 if token == "where":
                     return (Tokens.WHERE_QUERY,
                             Tokens.CLASS, className)
                 else:
-                    varName = tokens[3]
+                    varName = tokens[3].rstrip('?')
                     return (Tokens.WHAT_QUERY,
                             Tokens.CLASS, className,
                             Tokens.VAR, varName)
             else:
-                print("[LEXER] Unknown class: " + className)
+                print("[LEXER] Unknown class: " + className, file=sys.stderr)
+
+        else:
+            print("[LEXER] Couldn't lex: " + token, file=sys.stderr)
+            return (None)
 
     def lex(self):
         return self.step(self.text.split(" "))

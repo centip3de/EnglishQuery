@@ -34,3 +34,7 @@ class Parser():
         elif token == Tokens.WHERE_QUERY:
             className = self.tokens[2]
             return getattr(self.vars[className], 'location')
+
+        else:
+            print("[PARSER] Couldn't parse: " + token, file=sys.stderr)
+            return None
