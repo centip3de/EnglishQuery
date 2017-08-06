@@ -1,20 +1,5 @@
 from enum import Enum
-
-class Color(Enum):
-    NONE = "none",
-    RED = "red",
-    BLUE = "blue",
-    GREEN = "green",
-    YELLOW = "yellow",
-    ORANGE = "orange",
-    PURPLE = "purple",
-    PINK = "pink",
-    WHITE = "white",
-    BLACK = "black"
-
-class Types(Enum):
-    OBJECT = 0,
-    FOOD = 1,
+from builtin import *
 
 class Tokens(Enum):
     DEFINE = 0,
@@ -30,24 +15,6 @@ class Tokens(Enum):
     WHERE_QUERY = 10,
     HOW_QUERY = 11
 
-class FoodBuiltin():
-    def __init__(self):
-        pass
-
-class ObjectBuiltin():
-    def __init__(self,
-                 name="",
-                 location=(0, 0),
-                 color=Color.NONE,
-                 size=0,
-                 parent=None):
-
-        self.name = name
-        self.location = location
-        self.color = color
-        self.size = size
-        self.parent = parent
-        self.location_type = type(location)
 
 class Lexer():
     def __init__(self, text):
@@ -88,7 +55,7 @@ class Lexer():
 
         elif self.vars.get(token):
             assignment = tokens[1] + " " + tokens[2]
-            if assignment == "has a":
+            if assignment == "has a" or assignment == "has an":
                 varName = tokens[3]
 
                 if len(tokens) == 6:
