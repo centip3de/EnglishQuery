@@ -1,3 +1,4 @@
+import sys
 from lexer import Tokens
 from builtin import *
 
