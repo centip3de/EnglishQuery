@@ -44,9 +44,12 @@ class Lexer():
         else:
             return None
 
+    # TODO: If we want to scale much past this, we should probably not roll our own
+    # lexer... This is getting kinda gross.
     def step(self, tokens):
         token = tokens[0]
 
+        # Definition
         if token == "define":
             name = tokens[1]
             objName = tokens[4]
@@ -56,6 +59,7 @@ class Lexer():
             self.vars[name] = objType
             return (Tokens.DEFINE, Tokens.NAME, name, Tokens.TYPE, objType)
 
+        # Assignment and relationships
         elif self.vars.get(token):
             assignment = tokens[1] + " " + tokens[2]
             if assignment == "has a" or assignment == "has an":
@@ -88,6 +92,7 @@ class Lexer():
                                 Tokens.VAR, varName,
                                 Tokens.VAR_CREATION)
 
+        # Lookups
         elif token in self.query_strings:
             className = tokens[2].rstrip("'s")
             className = tokens[2].rstrip("'s?")
