@@ -14,7 +14,9 @@ class Tokens(Enum):
     VAR_CREATION = 8,
     CLASS_CREATION = 9,
     WHERE_QUERY = 10,
-    HOW_QUERY = 11
+    HOW_QUERY = 11,
+    BI_RELATIONSHIP = 12,
+    UNI_RELATIONSHIP = 13
 
 
 class Lexer():
@@ -57,16 +59,34 @@ class Lexer():
         elif self.vars.get(token):
             assignment = tokens[1] + " " + tokens[2]
             if assignment == "has a" or assignment == "has an":
-                varName = tokens[3]
+                if tokens[4] == "relationship":
+                    varName = tokens[6]
 
-                if len(tokens) == 6:
-                    return (Tokens.CLASS, token,
-                            Tokens.VAR, varName,
-                            Tokens.ASSIGNMENT, tokens[5])
+                    if self.vars.get(varName):
+                        if tokens[3] == "bidirectional":
+                            return (Tokens.VAR, token,
+                                    Tokens.BI_RELATIONSHIP,
+                                    Tokens.VAR, varName)
+                        elif tokens[3] == "unidirectional":
+                            return (Tokens.VAR, token,
+                                    Tokens.UNI_RELATIONSHIP,
+                                    Tokens.VAR, varName)
+                        else:
+                            print("[LEXER] Unsupported relationship.", file=sys.stderr)
+
+                    else:
+                        print("[LEXER] Could not find variable with name: " + varName, file=sys.stderr)
                 else:
-                    return (Tokens.CLASS, token,
-                            Tokens.VAR, varName,
-                            Tokens.VAR_CREATION)
+                    varName = tokens[3]
+
+                    if len(tokens) == 6:
+                        return (Tokens.CLASS, token,
+                                Tokens.VAR, varName,
+                                Tokens.ASSIGNMENT, tokens[5])
+                    else:
+                        return (Tokens.CLASS, token,
+                                Tokens.VAR, varName,
+                                Tokens.VAR_CREATION)
 
         elif token in self.query_strings:
             className = tokens[2].rstrip("'s")
