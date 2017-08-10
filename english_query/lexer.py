@@ -68,12 +68,12 @@ class Lexer():
 
                     if self.vars.get(varName):
                         if tokens[3] == "bidirectional":
-                            return (Tokens.VAR, token,
-                                    Tokens.BI_RELATIONSHIP,
+                            return (Tokens.BI_RELATIONSHIP,
+                                    Tokens.VAR, token,
                                     Tokens.VAR, varName)
                         elif tokens[3] == "unidirectional":
-                            return (Tokens.VAR, token,
-                                    Tokens.UNI_RELATIONSHIP,
+                            return (Tokens.UNI_RELATIONSHIP,
+                                    Tokens.VAR, token,
                                     Tokens.VAR, varName)
                         else:
                             print("[LEXER] Unsupported relationship.", file=sys.stderr)
@@ -84,13 +84,14 @@ class Lexer():
                     varName = tokens[3]
 
                     if len(tokens) == 6:
-                        return (Tokens.CLASS, token,
+                        return (Tokens.ASSIGNMENT,
+                                Tokens.CLASS, token,
                                 Tokens.VAR, varName,
-                                Tokens.ASSIGNMENT, tokens[5])
+                                tokens[5])
                     else:
-                        return (Tokens.CLASS, token,
-                                Tokens.VAR, varName,
-                                Tokens.VAR_CREATION)
+                        return (Tokens.VAR_CREATION,
+                                Tokens.CLASS, token,
+                                Tokens.VAR, varName)
 
         # Lookups
         elif token in self.query_strings:

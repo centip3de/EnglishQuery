@@ -8,33 +8,29 @@ class Parser():
         self.vars = {}
 
 
-    # TODO: We need to refactor what our lexer spits out. Right now
-    # it's unclear what is happening from the first token, when we should
-    # be able to easily differentiate.
     def step(self):
 
         # TODO: Add error handling if `token == None`
         token = self.tokens[0]
 
-        # Definition
         if token == Tokens.DEFINE:
             varName = self.tokens[2]
             classType = self.tokens[4]
             self.vars[varName] = classType()
             return classType
 
-        # Assignment
-        elif token == Tokens.CLASS:
-            className = self.tokens[1]
-            varName = self.tokens[3]
-            value = None
-            if len(self.tokens) == 6:
-                value = self.tokens[5]
-
+        elif token == Tokens.ASSIGNMENT:
+            className = self.tokens[2]
+            varName = self.tokens[4]
+            value = self.tokens[5]
             setattr(self.vars[className], varName, value)
             return value
 
-        # Lookup
+        elif token == Tokens.VAR_CREATION:
+            className = self.tokens[2]
+            varName = self.tokens[4]
+            setattr(self.vars[className], varName, None)
+
         elif token == Tokens.WHAT_QUERY:
             className = self.tokens[2]
             varName = self.tokens[4]
@@ -43,28 +39,22 @@ class Parser():
             else:
                 return None
 
-        # Alternative lookup
         elif token == Tokens.WHERE_QUERY:
             className = self.tokens[2]
             return getattr(self.vars[className], 'location')
 
-        # Relationship
-        elif token == Tokens.VAR:
+        elif token == Tokens.BI_RELATIONSHIP:
             firstVar = self.vars.get(self.tokens[1])
             secondVar = self.vars.get(self.tokens[4])
-            relationship_type = self.tokens[2]
+            firstVar.relationship = secondVar
+            secondVar.relationship = firstVar
+            return str(firstVar) + " <=> " + str(secondVar)
 
-            if firstVar and secondVar:
-                if relationship_type == Tokens.UNI_RELATIONSHIP:
-                    firstVar.relationship = secondVar
-                    return str(firstVar) + " => " + str(secondVar)
-
-                elif relationship_type == Tokens.BI_RELATIONSHIP:
-                    firstVar.relationship = secondVar
-                    secondVar.relationship = firstVar
-                    return str(firstVar) + " <=> " + str(secondVar)
-            else:
-                print("[PARSER] Couldn't establish relationship between " + str(firstVar) + " and " + str(secondVar), file=sys.stderr)
+        elif token == Tokens.UNI_RELATIONSHIP:
+            firstVar = self.vars.get(self.tokens[2])
+            secondVar = self.vars.get(self.tokens[4])
+            firstVar.relationship = secondVar
+            return str(firstVar) + " => " + str(secondVar)
 
         else:
             print("[PARSER] Couldn't parse: " + token, file=sys.stderr)
