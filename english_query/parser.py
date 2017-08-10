@@ -44,17 +44,23 @@ class Parser():
             return getattr(self.vars[className], 'location')
 
         elif token == Tokens.BI_RELATIONSHIP:
-            firstVar = self.vars.get(self.tokens[1])
+            firstVar = self.vars.get(self.tokens[2])
             secondVar = self.vars.get(self.tokens[4])
-            firstVar.relationship = secondVar
-            secondVar.relationship = firstVar
-            return str(firstVar) + " <=> " + str(secondVar)
+            if firstVar and secondVar:
+                firstVar.relationship = secondVar
+                secondVar.relationship = firstVar
+                return str(firstVar) + " <=> " + str(secondVar)
+            else:
+                print("Could not establish a relationship", file=sys.stderr)
 
         elif token == Tokens.UNI_RELATIONSHIP:
             firstVar = self.vars.get(self.tokens[2])
             secondVar = self.vars.get(self.tokens[4])
-            firstVar.relationship = secondVar
-            return str(firstVar) + " => " + str(secondVar)
+            if firstVar and secondVar:
+                firstVar.relationship = secondVar
+                return str(firstVar) + " => " + str(secondVar)
+            else:
+                print("Could not establish a relationship", file=sys.stderr)
 
         else:
             print("[PARSER] Couldn't parse: " + token, file=sys.stderr)
